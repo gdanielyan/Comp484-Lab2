@@ -2,21 +2,63 @@
 <html lang="en">
 <head>
 	<title>Basic Validation & Event Handling</title>
+	<meta charset="utf-8">
 	<style>
-	
+
 	</style>
 	<script>
+		function validateForm(){
+			// Validate first name and last name
+			// Make sure its 2 characters in length
+			// and the first character is capitalized.
+			var first = document.forms["theForm"]["firstName"];
+			var last = document.forms["theForm"]["lastName"];
 
+			var errors = ""; // Array used to store error messages.
+
+			if(first.value.length > 2){
+				errors += ("Max 2 chars for first name.<br>");
+			}
+			if(first.value.charAt(0) != first.value.charAt(0).toUpperCase()){
+				errors += ("First character must be capitalized in first name.<br>");
+			}
+			if(last.value.length > 2)
+				errors += ("Max 2 chars for last name.<br>");
+			if(last.value.charAt(0) != last.value.charAt(0).toUpperCase()){
+				errors += ("First character must be capitalized in last name.<br>");
+			}
+
+			// Validate that the user has entered a 9 digit number
+			// Using a regular expression to validate the match
+			var nineDigitRegEx = /^\d{9}$/;
+			var idNum = document.forms["theForm"]["iD"].value;
+			if(!(idNum.match(nineDigitRegEx))){
+				errors += ("ID must be 9 digit number");
+			}
+
+
+			// Validate and limit the user to 25 words
+			// Tokenize the entry and see the length...
+			
+					//display error messages in the div above the form input fields
+			document.getElementById("errors").innerHTML = errors;
+		}
+
+		// Calculator functionality
+		
+		// Save the hours worked and display
 	</script>
 </head>
 <body>
 	<div>
 		<h3>Basic Form Validation and Event Handling</h3>
 	</div>
-	<form method="" action="">
+	<form onsubmit="event.preventDefault(); validateForm();" id="theForm">
 		<fieldset>
-			First name: <br>
-			<input type="text" name="firstName" value="" placeholder="First name here" id="fN">
+			<div id="errors"></div><br>
+
+			First Name: <br>
+			<input type="text" name="firstName" value="" placeholder="First name here" id="fN" autofocus>
 			<br>
 
 			Last Name: <br>
@@ -32,8 +74,8 @@
 			<br>
 			
 			<div id="calculator">
+				<input type="text" id="results">
 				<table>
-					<tr><input type="text" id="results"></tr>
 					<tr>
 						<td><input type="button" value="7"></td>
 						<td><input type="button" value="8"></td>
@@ -59,11 +101,12 @@
 						<td><input type="button" value="+"></td>
 					</tr>
 				</table>
-				<input type="button" value="Save">
-			<div>
+			</div>
 			<label for="hours">Hours Worked This Week: </label><span id="hours"></span>
 		</fieldset>
-		<input type="submit" value="Submit">
+		<div>
+			<input type="submit" value="Submit">
+		</div>
 	</form>
 </body>
 </html>
