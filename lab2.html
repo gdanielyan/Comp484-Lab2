@@ -14,20 +14,23 @@
 			margin: 0 auto;
 		}
 		#inputs {
+			position: relative;
 			float: left;
 			padding: 15px;
 			margin-right: 20px;
 			border: 1px solid black;
 			height: 400px;
+			width: 300px;
 		}
 
 		#calculator {
+			position: relative;
 			background: lightblue;
 			padding: 15px;
 			float: left;
 			border: 1px solid black;
-			width: 200px;
-			height: 210px;
+			width: 250px;
+			height: 300px;
 		}
 
 		#inputs input {
@@ -41,7 +44,7 @@
 		}
 
 		table {
-			margin-bottom: 25px;
+			margin: 0 auto 25px auto;
 		}
 
 		#hours {
@@ -53,8 +56,12 @@
 			padding: 10px;
 		}
 
-		#submitButton {
-			padding-top: 15px;
+		#submitButton input{
+			display: block;
+			margin-top: 450px;
+			margin-left: 120px;
+			width: 100px;
+			height: 30px;
 			clear: both;
 		}
 
@@ -67,6 +74,7 @@
 		#results {
 			width: 170px;
 			height: 25px;
+			margin-left: 35px;
 			text-align:right;
 			font-weight: bold;
 		}
@@ -74,6 +82,13 @@
 		#errors {
 			color: red;
 			font-size: 1.2em;
+		}
+
+		#save input{
+			display: block;
+			width: 100px;
+			height: 30px;
+			margin: 50px auto;
 		}
 	</style>
 	<script>
@@ -99,9 +114,9 @@
 			//Registering both clear and queals buttons
 			document.getElementById("equals").addEventListener('click', equals, false);
 			document.getElementById("clear").addEventListener('click', clear, false);
-
+			document.getElementById("save").addEventListener('click', save, false);
 			resultsDisplay = document.getElementById("results");
-			resultsDisplay.addEventListener('keypress', digitEvents, false);
+			// resultsDisplay.addEventListener('keypress', keyHandler, false);
 			// resultsDisplay.addEventListener('keypress', operEvents, false);
 		}
 
@@ -121,10 +136,10 @@
 		};
 
 		function operEvents(event){
-			if(!isNaN(num1) || !isNaN(num2)){
-				displayNumber('ERROR: press C is displayed in result');
-				return;
-			}
+			// if(isNaN(num1) || isNaN(num2)){
+			// 	displayNumber("ERROR: press C is displayed in result");
+			// 	return;
+			// }
 			var value = event.target.value;
 			if(oper === ''){
 				oper = value;
@@ -153,6 +168,20 @@
 			num1 = num2 = oper = '';
 			displayNumber('');
 		};
+
+		function save(){
+			var textToshow = '';
+			if(isNaN(resultsDisplay.value) || resultsDisplay.value == '')
+				textToshow = "Not a valid number of hours worked";
+			else
+				textToshow = resultsDisplay.value;
+
+			document.getElementById("hours").innerHTML = textToshow;
+		}
+
+		function keyHandler(event){
+
+		}
 
 		function validateForm(){
 			// Validate first name and last name
@@ -253,7 +282,8 @@
 							<td><input type="button" value="+" name="+" class="operator"></td>
 						</tr>
 					</table>
-					<label for="hours">Hours Worked This Week: </label><span id="hours"></span>
+					<div>Hours worked this week: <span id="hours"></span></div>
+					<div id="save"><input type="button" value="Save"></div>
 				</div>
 				<div id="submitButton"><input type="submit" value="Submit"></div>
 			</fieldset>
