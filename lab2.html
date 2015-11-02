@@ -4,109 +4,260 @@
 	<title>Basic Validation & Event Handling</title>
 	<meta charset="utf-8">
 	<style>
+		body {
+			width: 800px;
+			margin: 0 auto;
+		}
 
+		#title {
+			width: 400px;
+			margin: 0 auto;
+		}
+		#inputs {
+			float: left;
+			padding: 15px;
+			margin-right: 20px;
+			border: 1px solid black;
+			height: 400px;
+		}
+
+		#calculator {
+			background: lightblue;
+			padding: 15px;
+			float: left;
+			border: 1px solid black;
+			width: 200px;
+			height: 210px;
+		}
+
+		#inputs input {
+			margin-bottom: 10px;
+			margin-top: 0px;
+		}
+
+		#errors {
+			display: block;
+			margin-bottom: 10px;
+		}
+
+		table {
+			margin-bottom: 25px;
+		}
+
+		#hours {
+			width: 50px;
+			padding: 5px;
+		}
+
+		form {
+			padding: 10px;
+		}
+
+		#submitButton {
+			padding-top: 15px;
+			clear: both;
+		}
+
+		table input{
+			width: 40px;
+			height: 30px;
+			display: inline-block;
+		}
+
+		#results {
+			width: 170px;
+			height: 25px;
+			text-align:right;
+			font-weight: bold;
+		}
+
+		#errors {
+			color: red;
+			font-size: 1.2em;
+		}
 	</style>
 	<script>
+		var numberButtons, operatorButtons;
+		var num1 ='', num2='', oper ='';
+		var resultsDisplay;
+
+		window.addEventListener("load", load, false);
+
+		function load(){
+			//Registering all 0-9 number buttons
+			numberButtons = document.getElementsByClassName("num");
+			for(var i = 0; i < numberButtons.length; i++){
+				numberButtons[i].addEventListener('click', digitEvents, false);
+			}
+
+			//Register all operator buttons (/ - + *)
+			operatorButtons = document.getElementsByClassName("operator");
+			for(var i = 0; i < operatorButtons.length; i++){
+				operatorButtons[i].addEventListener('click', operEvents, false);
+			}
+
+			//Registering both clear and queals buttons
+			document.getElementById("equals").addEventListener('click', equals, false);
+			document.getElementById("clear").addEventListener('click', clear, false);
+
+			resultsDisplay = document.getElementById("results");
+			resultsDisplay.addEventListener('keypress', digitEvents, false);
+			// resultsDisplay.addEventListener('keypress', operEvents, false);
+		}
+
+		function displayNumber(result){
+			resultsDisplay.value = result;
+		};
+
+		function digitEvents(event){
+			var value = event.target.value;
+			if(oper === ''){
+				num1 += value;
+				displayNumber(num1);
+			}else{
+				num2 += value;
+				displayNumber(num2);
+			}
+		};
+
+		function operEvents(event){
+			if(!isNaN(num1) || !isNaN(num2)){
+				displayNumber('ERROR: press C is displayed in result');
+				return;
+			}
+			var value = event.target.value;
+			if(oper === ''){
+				oper = value;
+			}
+		};
+
+		function equals(){
+			var result = 0;
+			var val1 = parseInt(num1);
+			var val2 = parseInt(num2);
+
+			if(oper == '*'){
+				result = val1 * val2;
+			}else if(oper == '-'){
+				result = val1 - val2;
+			}else if(oper == '+'){
+				result = val1 + val2;
+			}else if(oper == '/'){
+				result = val1/val2;
+			}
+			displayNumber(result.toString());
+			num1 = num2 = oper = '';
+		};
+
+		function clear(){
+			num1 = num2 = oper = '';
+			displayNumber('');
+		};
+
 		function validateForm(){
 			// Validate first name and last name
 			// Make sure its 2 characters in length
 			// and the first character is capitalized.
-			var first = document.forms["theForm"]["firstName"];
-			var last = document.forms["theForm"]["lastName"];
-
+			var first = document.forms["theForm"]["firstName"].value;
+			var last = document.forms["theForm"]["lastName"].value;
 			var errors = ""; // Array used to store error messages.
 
-			if(first.value.length > 2){
-				errors += ("Max 2 chars for first name.<br>");
-			}
-			if(first.value.charAt(0) != first.value.charAt(0).toUpperCase()){
-				errors += ("First character must be capitalized in first name.<br>");
-			}
-			if(last.value.length > 2)
-				errors += ("Max 2 chars for last name.<br>");
-			if(last.value.charAt(0) != last.value.charAt(0).toUpperCase()){
-				errors += ("First character must be capitalized in last name.<br>");
-			}
+			// Validation for first name.
+			if(first.trim() === "")
+				errors += ("Please enter something for first name<br>");
+			if(first.length > 2)
+				errors += ("Max 2 chars for first name<br>");
+			if(first.charAt(0) !== first.charAt(0).toUpperCase())
+				errors += ("First character must be capitalized in first name<br>");
+			// Validation for last name.
+			if(last.trim() === "")
+				errors += ("Please enter something for last name<br>");
+			if(last.length > 2)
+				errors += ("Max 2 chars for last name<br>");
+			if(last.charAt(0) !== last.charAt(0).toUpperCase())
+				errors += ("First character must be capitalized in last name<br>");
 
 			// Validate that the user has entered a 9 digit number
 			// Using a regular expression to validate the match
 			var nineDigitRegEx = /^\d{9}$/;
 			var idNum = document.forms["theForm"]["iD"].value;
 			if(!(idNum.match(nineDigitRegEx))){
-				errors += ("ID must be 9 digit number");
+				errors += ("ID must be 9 digit number <br>");
 			}
-
 
 			// Validate and limit the user to 25 words
 			// Tokenize the entry and see the length...
-			
-					//display error messages in the div above the form input fields
+			var bioInput = document.forms["theForm"]["bio"].value;
+			var tokens = bioInput.split(/\s+/);
+			if(tokens.length-1 > 25)
+				errors += ("Biography word length is 25 <br>");
+
+			//display error messages in the div above the form input fields
 			document.getElementById("errors").innerHTML = errors;
-		}
+		};
 
 		// Calculator functionality
-		
 		// Save the hours worked and display
 	</script>
 </head>
 <body>
-	<div>
+	<div id="title">
 		<h3>Basic Form Validation and Event Handling</h3>
 	</div>
-	<form onsubmit="event.preventDefault(); validateForm();" id="theForm">
-		<fieldset>
-			<div id="errors"></div><br>
+	<div class="form">
+		<form onsubmit="event.preventDefault(); validateForm();" id="theForm">
+			<fieldset>
+				<div id="inputs">
+					<div id="errors"></div>
+					First Name: <br>
+					<input type="text" name="firstName" value="" placeholder="First name here" id="fN" autofocus>
+					<br>
 
-			First Name: <br>
-			<input type="text" name="firstName" value="" placeholder="First name here" id="fN" autofocus>
-			<br>
+					Last Name: <br>
+					<input type="text" name="lastName" value="" placeholder="Last name here" id="lN">
+					<br>
 
-			Last Name: <br>
-			<input type="text" name="lastName" value="" placeholder="Last name here" id="lN">
-			<br>
+					Student ID: <br>
+					<input type="text" name="studentID" value="" placeholder="ID here" id="iD">
+					<br>
 
-			Student ID: <br>
-			<input type="text" name="studentID" value="" placeholder="ID here" id="iD">
-			<br>
-
-			Biography: <br>
-			<textarea name="bio" rows="10" cols="25" placeholder="Biography here"></textarea>
-			<br>
-			
-			<div id="calculator">
-				<input type="text" id="results">
-				<table>
-					<tr>
-						<td><input type="button" value="7"></td>
-						<td><input type="button" value="8"></td>
-						<td><input type="button" value="9"></td>
-						<td><input type="button" value="c"></td>
-					</tr>
-					<tr>
-						<td><input type="button" value="4"></td>
-						<td><input type="button" value="5"></td>
-						<td><input type="button" value="6"></td>
-						<td><input type="button" value="/"></td>
-					</tr>
-					<tr>
-						<td><input type="button" value="1"></td>
-						<td><input type="button" value="2"></td>
-						<td><input type="button" value="3"></td>
-						<td><input type="button" value="*"></td>
-					</tr>
-					<tr>
-						<td><input type="button" value="0"></td>
-						<td><input type="button" value="="></td>
-						<td><input type="button" value="-"></td>
-						<td><input type="button" value="+"></td>
-					</tr>
-				</table>
-			</div>
-			<label for="hours">Hours Worked This Week: </label><span id="hours"></span>
-		</fieldset>
-		<div>
-			<input type="submit" value="Submit">
-		</div>
-	</form>
+					Biography: <br>
+					<textarea name="bio" rows="10" cols="25" placeholder="Biography here" id="biog"></textarea>
+					<br>
+				</div>
+				<div id="calculator">
+					<input type="text" id="results" name="results">
+					<table id="buttons">
+						<tr>
+							<td><input type="button" value="7" name="7" class="num"></td>
+							<td><input type="button" value="8" name="8" class="num"></td>
+							<td><input type="button" value="9" name="9" class="num"></td>
+							<td><input type="button" value="c" name="c" id="clear"></td>
+						</tr>
+						<tr>
+							<td><input type="button" value="4" name="4" class="num"></td>
+							<td><input type="button" value="5" name="5" class="num"></td>
+							<td><input type="button" value="6" name="6" class="num"></td>
+							<td><input type="button" value="/" name="/" class="operator"></td>
+						</tr>
+						<tr>
+							<td><input type="button" value="1" name="1" class="num"></td>
+							<td><input type="button" value="2" name="2" class="num"></td>
+							<td><input type="button" value="3" name="3" class="num"></td>
+							<td><input type="button" value="*" name="*" class="operator"></td>
+						</tr>
+						<tr>
+							<td><input type="button" value="0" name="0" class="num"></td>
+							<td><input type="button" value="=" name="=" id="equals"></td>
+							<td><input type="button" value="-" name="-" class="operator"></td>
+							<td><input type="button" value="+" name="+" class="operator"></td>
+						</tr>
+					</table>
+					<label for="hours">Hours Worked This Week: </label><span id="hours"></span>
+				</div>
+				<div id="submitButton"><input type="submit" value="Submit"></div>
+			</fieldset>
+		</form>
+	</div>
 </body>
 </html>
