@@ -9,7 +9,7 @@
 			margin: 0 auto;
 		}
 
-		#title {
+		#title, #errors {
 			width: 400px;
 			margin: 0 auto;
 		}
@@ -52,6 +52,10 @@
 			padding: 5px;
 		}
 
+		#hrs {
+			font-weight: bold;
+		}
+
 		form {
 			padding: 10px;
 		}
@@ -80,7 +84,7 @@
 		}
 
 		#errors {
-			color: red;
+			color: blue;
 			font-size: 1.2em;
 		}
 
@@ -95,6 +99,8 @@
 		var numberButtons, operatorButtons;
 		var num1 ='', num2='', oper ='';
 		var resultsDisplay;
+		var errors = '';
+		var hoursSaved = '';
 
 		window.addEventListener("load", load, false);
 
@@ -111,20 +117,25 @@
 				operatorButtons[i].addEventListener('click', operEvents, false);
 			}
 
-			//Registering both clear and queals buttons
+			//Registering both clear, queals, and save buttons
 			document.getElementById("equals").addEventListener('click', equals, false);
 			document.getElementById("clear").addEventListener('click', clear, false);
 			document.getElementById("save").addEventListener('click', save, false);
+
 			resultsDisplay = document.getElementById("results");
-			// resultsDisplay.addEventListener('keypress', keyHandler, false);
-			// resultsDisplay.addEventListener('keypress', operEvents, false);
 		}
 
+		// This method is called each time we need to display something in the calculator screen.
 		function displayNumber(result){
 			resultsDisplay.value = result;
 		};
 
+		// This method is checking the values that are stored in the calculator screen.
 		function digitEvents(event){
+			if(!parseTheValue()){
+				displayNumber("ERROR: press C");
+				return;
+			}
 			var value = event.target.value;
 			if(oper === ''){
 				num1 += value;
@@ -136,10 +147,10 @@
 		};
 
 		function operEvents(event){
-			// if(isNaN(num1) || isNaN(num2)){
-			// 	displayNumber("ERROR: press C is displayed in result");
-			// 	return;
-			// }
+			if(!parseTheValue()){
+				displayNumber("ERROR: press C");
+				return;
+			}
 			var value = event.target.value;
 			if(oper === ''){
 				oper = value;
@@ -167,21 +178,29 @@
 		function clear(){
 			num1 = num2 = oper = '';
 			displayNumber('');
+			// document.getElementById("hours").innerHTML = '';
 		};
 
 		function save(){
-			var textToshow = '';
-			if(isNaN(resultsDisplay.value) || resultsDisplay.value == '')
-				textToshow = "Not a valid number of hours worked";
-			else
-				textToshow = resultsDisplay.value;
+			errors = '';
+			hoursSaved = '';
+			if(!parseTheValue() || resultsDisplay.value == ''){
+				errors += "Not a valid number of hours worked<br>";
+			}
+			else{
+				hoursSaved = resultsDisplay.value;
+				document.getElementById("hours").style.color = "black";
+			}
 
-			document.getElementById("hours").innerHTML = textToshow;
+			document.getElementById("hours").innerHTML = hoursSaved;
+			document.getElementById("errors").innerHTML = errors;
 		}
 
-		function keyHandler(event){
-
-		}
+		function parseTheValue(){
+			if(isNaN(resultsDisplay.value))
+				return false;
+			return true;
+		};
 
 		function validateForm(){
 			// Validate first name and last name
@@ -189,7 +208,7 @@
 			// and the first character is capitalized.
 			var first = document.forms["theForm"]["firstName"].value;
 			var last = document.forms["theForm"]["lastName"].value;
-			var errors = ""; // Array used to store error messages.
+			errors = '';
 
 			// Validation for first name.
 			if(first.trim() === "")
@@ -198,6 +217,9 @@
 				errors += ("Max 2 chars for first name<br>");
 			if(first.charAt(0) !== first.charAt(0).toUpperCase())
 				errors += ("First character must be capitalized in first name<br>");
+			if(!first.match(/^[A-Za-z]+$/))
+				errors += ("Only letters are allowed for first name<br>");
+
 			// Validation for last name.
 			if(last.trim() === "")
 				errors += ("Please enter something for last name<br>");
@@ -205,6 +227,8 @@
 				errors += ("Max 2 chars for last name<br>");
 			if(last.charAt(0) !== last.charAt(0).toUpperCase())
 				errors += ("First character must be capitalized in last name<br>");
+			if(!last.match(/^[A-Za-z]+$/))
+				errors += ("Only letters are allowed for last name<br>");
 
 			// Validate that the user has entered a 9 digit number
 			// Using a regular expression to validate the match
@@ -216,13 +240,27 @@
 
 			// Validate and limit the user to 25 words
 			// Tokenize the entry and see the length...
-			var bioInput = document.forms["theForm"]["bio"].value;
-			var tokens = bioInput.split(/\s+/);
-			if(tokens.length-1 > 25)
-				errors += ("Biography word length is 25 <br>");
+			var bioInput = document.forms["theForm"]["bio"].value.trim();
+			var trimmedWords = bioInput.replace(/\s+/gi, ' ');
+			var wordCount = trimmedWords.split(' ').length;
+			if(wordCount > 25)
+				errors += ("Biography word max is 25 <br>");
 
 			//display error messages in the div above the form input fields
 			document.getElementById("errors").innerHTML = errors;
+			if(errors !== ''){
+				document.getElementById("form").style.background = "red";
+			}else if(errors === ''){
+				document.getElementById("form").style.background = "white";
+				var message = '';
+				message += "First name: " + first;
+				message += "\nLast name: " + last;
+				message += "\nStudent ID#: " + idNum;
+				message += "\nBiography: " + bioInput;
+				message += "\nCurrent calculator result: " + resultsDisplay.value;
+				message += "\nHours worked this week: " + hoursSaved;
+				alert(message);
+			}
 		};
 
 		// Calculator functionality
@@ -233,11 +271,10 @@
 	<div id="title">
 		<h3>Basic Form Validation and Event Handling</h3>
 	</div>
-	<div class="form">
+	<div id="errors"></div>
+	<div id="form">
 		<form onsubmit="event.preventDefault(); validateForm();" id="theForm">
-			<fieldset>
 				<div id="inputs">
-					<div id="errors"></div>
 					First Name: <br>
 					<input type="text" name="firstName" value="" placeholder="First name here" id="fN" autofocus>
 					<br>
@@ -282,11 +319,10 @@
 							<td><input type="button" value="+" name="+" class="operator"></td>
 						</tr>
 					</table>
-					<div>Hours worked this week: <span id="hours"></span></div>
+					<div id="hrs">Hours worked this week: <span id="hours"></span></div>
 					<div id="save"><input type="button" value="Save"></div>
 				</div>
 				<div id="submitButton"><input type="submit" value="Submit"></div>
-			</fieldset>
 		</form>
 	</div>
 </body>
