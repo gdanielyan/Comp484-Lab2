@@ -1,3 +1,12 @@
+<!-- 
+
+Georgiy Danielyan
+Lab 2 - Comp 484 
+Simple Form validation and event handling
+Completed Nov 4th 2015
+
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,11 +105,11 @@
 		}
 	</style>
 	<script>
+		var errors = '';
+		var hoursSaved = '';
 		var numberButtons, operatorButtons;
 		var num1 ='', num2='', oper ='';
 		var resultsDisplay;
-		var errors = '';
-		var hoursSaved = '';
 
 		window.addEventListener("load", load, false);
 
@@ -137,17 +146,17 @@
 				return;
 			}
 			var value = event.target.value;
-			if(oper === ''){
+			if(oper === ''){ //if we dont have an operator then continue appending the number to the first num variable
 				num1 += value;
 				displayNumber(num1);
-			}else{
+			}else{ // if we reach here then we must be done with our first number and operator and we can start appending to our second num variable.
 				num2 += value;
 				displayNumber(num2);
 			}
 		};
 
 		function operEvents(event){
-			if(!parseTheValue()){
+			if(!parseTheValue()){ //Anytime an operator is pressed we want to parse the current result in the calculator and make sure its usable.
 				displayNumber("ERROR: press C");
 				return;
 			}
@@ -157,6 +166,8 @@
 			}
 		};
 
+		//Pressing the equals operator should allow us to use whatever is stored in the first and second
+		//num variables and perform the operation that is stored in operater. 
 		function equals(){
 			var result = 0;
 			var val1 = parseInt(num1);
@@ -171,8 +182,8 @@
 			}else if(oper == '/'){
 				result = val1/val2;
 			}
-			displayNumber(result.toString());
-			num1 = num2 = oper = '';
+			displayNumber(result.toString());  //convert the parsed value into a string and display it.
+			num1 = num2 = oper = ''; //after we display the result clear whatever we have stored in num1, num2, and the operator. 
 		};
 
 		function clear(){
@@ -181,6 +192,9 @@
 			// document.getElementById("hours").innerHTML = '';
 		};
 
+		///When the save button is fired.. we first should check to see if the value is valid 
+		// Valid hours worked should be a number
+		// Invalid hours worked would be NaN or an empty value. 
 		function save(){
 			errors = '';
 			hoursSaved = '';
