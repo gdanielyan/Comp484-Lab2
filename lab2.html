@@ -227,22 +227,18 @@ Completed Nov 4th 2015
 			// Validation for first name.
 			if(first.trim() === "")
 				errors += ("Please enter something for first name<br>");
-			if(first.length > 2)
-				errors += ("Max 2 chars for first name<br>");
+			if(!isNaN(first) && first.length > 0)
+				errors += ("Letters only for first name<br>");
 			if(first.charAt(0) !== first.charAt(0).toUpperCase())
 				errors += ("First character must be capitalized in first name<br>");
-			if(!first.match(/^[A-Za-z]+$/))
-				errors += ("Only letters are allowed for first name<br>");
 
 			// Validation for last name.
 			if(last.trim() === "")
 				errors += ("Please enter something for last name<br>");
-			if(last.length > 2)
-				errors += ("Max 2 chars for last name<br>");
+			if(!isNaN(last) && last.length > 0)
+				errors += ("Letters only for last name<br>");
 			if(last.charAt(0) !== last.charAt(0).toUpperCase())
 				errors += ("First character must be capitalized in last name<br>");
-			if(!last.match(/^[A-Za-z]+$/))
-				errors += ("Only letters are allowed for last name<br>");
 
 			// Validate that the user has entered a 9 digit number
 			// Using a regular expression to validate the match
@@ -276,9 +272,6 @@ Completed Nov 4th 2015
 				alert(message);
 			}
 		};
-
-		// Calculator functionality
-		// Save the hours worked and display
 	</script>
 </head>
 <body>
